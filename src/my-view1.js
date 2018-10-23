@@ -9,6 +9,9 @@
  */
 
 import { PolymerElement, html } from '@polymer/polymer/polymer-element.js';
+import '@polymer/paper-input/paper-input.js';
+import '@polymer/paper-checkbox/paper-checkbox.js';
+import '@polymer/paper-button/paper-button.js';
 import './shared-styles.js';
 
 class MyView1 extends PolymerElement {
@@ -20,13 +23,19 @@ class MyView1 extends PolymerElement {
 
           padding: 10px;
         }
+        form{
+          display: flex;
+        }
       </style>
 
       <div class="card">
         <div class="circle">1</div>
-        <h1>View One</h1>
-        <p>Ut labores minimum atomorum pro. Laudem tibique ut has.</p>
-        <p>Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Lorem ipsum dolor sit amet, per in nusquam nominavi periculis, sit elit oportere ea.Cu mei vide viris gloriatur, at populo eripuit sit.</p>
+        <h1>lista zakupów</h1>
+        <form>
+        <paper-checkbox></paper-checkbox>
+        <paper-input always-float-label label="dodaj produkt"></paper-input>
+        <paper-button class="add">dodaj</paper-button>
+        </form>
       </div>
     `;
   }

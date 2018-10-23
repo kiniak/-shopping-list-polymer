@@ -8,6 +8,13 @@
  * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
  */
 
+const _customElementsDefine = window.customElements.define;
+window.customElements.define = function(name, clazz, config) {
+  if (!customElements.get(name)) {
+    _customElementsDefine.call(window.customElements, name, clazz, config);
+  }
+};
+
 import { PolymerElement, html } from '@polymer/polymer/polymer-element.js';
 import { setPassiveTouchGestures, setRootPath } from '@polymer/polymer/lib/utils/settings.js';
 import '@polymer/app-layout/app-drawer/app-drawer.js';
@@ -84,8 +91,8 @@ class MyApp extends PolymerElement {
         <app-drawer id="drawer" slot="drawer" swipe-open="[[narrow]]">
           <app-toolbar>Menu</app-toolbar>
           <iron-selector selected="[[page]]" attr-for-selected="name" class="drawer-list" role="navigation">
-            <a name="view1" href="[[rootPath]]view1">View One</a>
-            <a name="view2" href="[[rootPath]]view2">View Two</a>
+            <a name="view1" href="[[rootPath]]view1">lista zakupów</a>
+            <a name="view2" href="[[rootPath]]view2">pomoc</a>
             <a name="view3" href="[[rootPath]]view3">View Three</a>
           </iron-selector>
         </app-drawer>
