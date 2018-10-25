@@ -13,8 +13,35 @@ import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-checkbox/paper-checkbox.js';
 import '@polymer/paper-button/paper-button.js';
 import './shared-styles.js';
+import {} from '@polymer/polymer/lib/elements/dom-repeat.js';     
+import '@polymer/polymer/lib/elements/dom-if.js';
+
 
 class MyView1 extends PolymerElement {
+  static get properties() {
+    return {
+      products: {
+        type: Array,
+        value() {
+          return [];
+        }
+      },
+      
+    };
+  }
+
+  
+  add(){
+    if (!this.product) return;
+    this.push('products', {product: this.product, admin: true});
+    this.product = '';
+  };
+
+
+  remove(e) {
+    this.splice('products', e.model.index, 1);
+  }
+
   static get template() {
     return html`
       <style include="shared-styles">
@@ -25,20 +52,49 @@ class MyView1 extends PolymerElement {
         }
         form{
           display: flex;
+          align-items: center;
         }
+        .myLists{
+          display: flex;
+        }
+
       </style>
 
-      <div class="card">
-        <div class="circle">1</div>
-        <h1>lista zakupów</h1>
-        <form>
-        <paper-checkbox></paper-checkbox>
-        <paper-input always-float-label label="dodaj produkt"></paper-input>
-        <paper-button class="add">dodaj</paper-button>
-        </form>
-      </div>
-    `;
-  }
+  
+          
+        <div class="card">
+            <div class="circle">1</div>
+            <h1>lista zakupów</h1>
+            
+              <template is="dom-repeat" items="{{products}}" is="dom-if" if="{{products.length}}">
+                <div class="myLists" >
+                  [[item.product]]</div><paper-button class="delete" on-click="remove">usuń</paper-button>
+                </div>
+              </template>
+
+            <template is="dom-if" if="{{!products.length}}">
+              <p>
+                brak zakupów na liście
+              </p>
+            </template>
+            
+            <form>
+              <paper-input no-float-label label="dodaj produkt" value="{{product}}"></paper-input>
+              <paper-button class="add" on-click="add">dodaj</paper-button>
+            </form>
+          </div>
+
+
+        
+     
+     
+    `;  
+    }
+  
+   
+
+
+
 }
 
 window.customElements.define('my-view1', MyView1);
