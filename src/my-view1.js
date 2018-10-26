@@ -32,9 +32,18 @@ class MyView1 extends PolymerElement {
 
   
   add(){
-    if (!this.product) return;
-    this.push('products', {product: this.product, admin: true});
-    this.product = '';
+    if(this.products.find(item => item.product.toUpperCase()===this.product.toUpperCase())){
+      this.message= this.product + " jest już na liście zakupów";
+      this.product="";}
+      else if(!this.product){
+        return
+      }else{
+        this.push('products', {product: this.product, admin: true});
+        this.message = '';
+        this.product = '';
+      }
+ 
+  
   };
 
 
@@ -68,9 +77,10 @@ class MyView1 extends PolymerElement {
             
               <template is="dom-repeat" items="{{products}}" is="dom-if" if="{{products.length}}">
                 <div class="myLists" >
-                  [[item.product]]</div><paper-button class="delete" on-click="remove">usuń</paper-button>
+                <p>[[item.product]]</p><paper-button class="delete" on-click="remove">usuń</paper-button>
                 </div>
               </template>
+              <p class="dubleProduct">{{message}}</p>
 
             <template is="dom-if" if="{{!products.length}}">
               <p>
@@ -79,7 +89,7 @@ class MyView1 extends PolymerElement {
             </template>
             
             <form>
-              <paper-input no-float-label label="dodaj produkt" value="{{product}}"></paper-input>
+              <paper-input no-label-float label="wpisz produkt" value="{{product}}"></paper-input>
               <paper-button class="add" on-click="add">dodaj</paper-button>
             </form>
           </div>
