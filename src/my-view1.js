@@ -13,12 +13,13 @@ import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-checkbox/paper-checkbox.js';
 import '@polymer/paper-button/paper-button.js';
 import './shared-styles.js';
-import {} from '@polymer/polymer/lib/elements/dom-repeat.js';     
+import '@polymer/polymer/lib/elements/dom-repeat.js';     
 import '@polymer/polymer/lib/elements/dom-if.js';
 
 
 class MyView1 extends PolymerElement {
   static get properties() {
+
     return {
       products: {
         type: Array,
@@ -28,28 +29,64 @@ class MyView1 extends PolymerElement {
       },
       
     };
+    
+
   }
 
   
   add(){
     if(this.products.find(item => item.product.toUpperCase()===this.product.toUpperCase())){
-      this.message= this.product + " jest już na liście zakupów";
+      this.message= this.product.toLowerCase() + " jest już na liście zakupów";
       this.product="";}
       else if(!this.product){
         return
       }else{
-        this.push('products', {product: this.product, admin: true});
+        this.push('products', {product: this.product.toLowerCase(), editable: false});
         this.message = '';
         this.product = '';
+      
       }
  
   
   };
+  
+
+  remove(e){
+    
+    e.model.item = {
+      ...e.model.item,
+      editable: true
+    }
+   
+  }
 
 
-  remove(e) {
+  edit(e) {
+    e.model.item = {
+      ...e.model.item,
+      editable: true,
+      current: e.model.item.product
+    }
+  }
+
+  confirm(e) {
+    e.model.item = {
+      ...e.model.item,
+      editable: false
+    }
+  }
+
+  cancel(e) {
+    e.model.item = {
+      product: e.model.item.current,
+      editable: false
+    }
+  }
+
+  delete(e) {
     this.splice('products', e.model.index, 1);
   }
+
 
   static get template() {
     return html`
@@ -66,6 +103,10 @@ class MyView1 extends PolymerElement {
         .myLists{
           display: flex;
         }
+        .product{
+          min-width: 182px;
+          paddint-top: 10px;
+        }
 
       </style>
 
@@ -75,10 +116,19 @@ class MyView1 extends PolymerElement {
             <div class="circle">1</div>
             <h1>lista zakupów</h1>
             
-              <template is="dom-repeat" items="{{products}}" is="dom-if" if="{{products.length}}">
-                <div class="myLists" >
-                <p>[[item.product]]</p><paper-button class="delete" on-click="remove">usuń</paper-button>
-                </div>
+              <template is="dom-repeat" items="{{products}}">
+                <template  is="dom-if" if="{{!item.editable}}">
+                  <div class="myLists">
+                    <p class="product">[[item.product]]</p><paper-button on-click="edit">edytuj</paper-button><paper-button class="delete" on-click="delete">usuń</paper-button>
+                  </div>
+                </template>
+                <template is="dom-if" if="{{item.editable}}">
+                  <form>
+                    <paper-input no-label-float label="wpisz produkt" value="{{item.product}}"></paper-input>
+                    <paper-button on-click="confirm">zatwierdź</paper-button>
+                    <paper-button on-click="cancel">Anuluj</paper-button>
+                  </form>
+                </template>
               </template>
               <p class="dubleProduct">{{message}}</p>
 
