@@ -7,7 +7,7 @@
  * Code distributed by Google as part of the polymer project is also
  * subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
  */
-
+import 'fontawesome-icon';
 import { PolymerElement, html } from '@polymer/polymer/polymer-element.js';
 import '@polymer/paper-input/paper-input.js';
 import '@polymer/paper-checkbox/paper-checkbox.js';
@@ -102,10 +102,19 @@ class MyView1 extends PolymerElement {
         }
         .myLists{
           display: flex;
+          padding-top: 8px;
+        }
+        .editProduct{
+          display: flex;
+        }
+        .myLists p{
+          font-size: 16px;
+          font-weight: bold;
         }
         .product{
           min-width: 182px;
           paddint-top: 10px;
+          border-bottom: 1px solid white;
         }
 
       </style>
@@ -119,18 +128,18 @@ class MyView1 extends PolymerElement {
               <template is="dom-repeat" items="{{products}}">
                 <template  is="dom-if" if="{{!item.editable}}">
                   <div class="myLists">
-                    <p class="product">[[item.product]]</p><paper-button on-click="edit">edytuj</paper-button><paper-button class="delete" on-click="delete">usuń</paper-button>
+                    <p class="product">[[item.product]]</p><paper-button on-click="edit"><fontawesome-icon prefix="fas" name="edit" fixed-width></fontawesome-icon></paper-button><paper-button class="delete" on-click="delete"><fontawesome-icon prefix="fas" name="trash-alt" fixed-width></fontawesome-icon></paper-button>
                   </div>
                 </template>
                 <template is="dom-if" if="{{item.editable}}">
-                  <form>
-                    <paper-input no-label-float label="wpisz produkt" value="{{item.product}}"></paper-input>
-                    <paper-button on-click="confirm">zatwierdź</paper-button>
-                    <paper-button on-click="cancel">Anuluj</paper-button>
-                  </form>
+                  <div class="editProduct">
+                    <p><paper-input no-label-float label="wpisz produkt" value="{{item.product}}"></paper-input></p>
+                    <paper-button on-click="confirm"><fontawesome-icon prefix="fas" name="check-circle" fixed-width></fontawesome-icon></paper-button>
+                    <paper-button on-click="cancel"><fontawesome-icon prefix="fas" name="times-circle" fixed-width></fontawesome-icon></paper-button>
+                  </div>
                 </template>
               </template>
-              <p class="dubleProduct">{{message}}</p>
+              <p class="doubleProduct">{{message}}</p>
 
             <template is="dom-if" if="{{!products.length}}">
               <p>
