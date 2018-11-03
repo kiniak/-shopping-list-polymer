@@ -27,6 +27,12 @@ class MyView1 extends PolymerElement {
           return [];
         }
       },
+      temperature: {
+        type: String,
+        value(){
+          return ""
+        }
+      }
       
     };
     
@@ -82,6 +88,16 @@ class MyView1 extends PolymerElement {
       editable: false
     }
   }
+
+  serchWeather() {
+    let path = `https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20u%3D'c'%20and%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22${encodeURI(this.localization)}%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys`
+    fetch(path).then(response => {
+      return response.json();
+    }).then(data =>{ console.log(data);
+      this.temperature = data.query.results.channel.item.forecast[0].low
+    
+    });
+  } 
 
   delete(e) {
     this.splice('products', e.model.index, 1);
@@ -146,17 +162,25 @@ class MyView1 extends PolymerElement {
                 brak zakupów na liście
               </p>
             </template>
-            
             <form>
               <paper-input no-label-float label="wpisz produkt" value="{{product}}"></paper-input>
               <paper-button class="add" on-click="add">dodaj</paper-button>
             </form>
           </div>
-
-
-        
-     
-     
+          <div class="card">
+                  <p>sprawdz pogodę w swoim mieście</p>
+              <form>
+          
+                <paper-input no-label-float label="Podaj lokalizacje" value="{{localization}}"></paper-input>
+                <paper-button class="add" on-click="serchWeather">dodaj</paper-button>
+              </form>
+            <template is="dom-if" if="{{temperature}}">
+              <p>
+                {{temperature}}
+              </p>
+            </template>
+          </div> 
+     <!--https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22Szczecin%2C%20PL%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys-->
     `;  
     }
   
