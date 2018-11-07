@@ -66,7 +66,6 @@ class MyView1 extends PolymerElement {
    
   }
 
-
   edit(e) {
     e.model.item = {
       ...e.model.item,
@@ -90,11 +89,42 @@ class MyView1 extends PolymerElement {
   }
 
   serchWeather() {
-    let path = `https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20u%3D'c'%20and%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22${encodeURI(this.localization)}%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys`
+    if (!this.localization) this.localization = 'Szczecin'
+    let localization = this.localization;
+    let path = `https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20u%3D'c'%20and%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22${encodeURI(localization)}%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys`
     fetch(path).then(response => {
       return response.json();
     }).then(data =>{ console.log(data);
-      this.temperature = data.query.results.channel.item.forecast[0].low
+      if (!data.query.results){return this.errorMEsage = "nie znaleziono miasta "+this.localization;}
+    
+      
+      this.temperature = 1*data.query.results.channel.item.condition.temp;
+      this.temperatureLow = data.query.results.channel.item.forecast[0].low;
+      this.temperatureHigh = data.query.results.channel.item.forecast[0].high;
+      this.wind = 1*data.query.results.channel.wind.speed;
+      this.code = 1*data.query.results.channel.item.condition.code;
+      this.text = data.query.results.channel.item.condition.text;
+      this.WidgetLocalization = this.localization.toUpperCase()
+
+      if(this.code===0||this.code===1||this.code===2||this.code===3||this.code===4||this.code==5||this.code===6||this.code===7||this.code===37||this.code===38||this.code===39){
+        return this.weatherMessage = "Warunki pogodowe nie sprzyjają zakupą, lepiej pozostać w domu"
+      }else if(this.code===8||this.code===9||this.code===10){
+        return this.weatherMessage= "pogoda nie zachęca do zakupów"
+      }
+      else if(this.code===11||this.code===12||this.code===13||this.code===14||this.code===15||this.code===16||this.code===17||this.code===18||this.code===45||this.code===46||this.code===35||this.code===40){
+        return this.weatherMessage= "mogą wystąpić różnego rodzaju opady"
+      }
+      else if( this.temperature>15&&this.wind<19){
+        return this.weatherMessage = "super pogoda zarówno na zakupy jak i na spacer"
+      }
+      else if(this.wind>40){
+        return this.weatherMessage = "Uwaga na silny wiatr"
+      }
+      else if(this.temperature<0){
+        return this.weatherMessage = "Możliwe przymrozki"
+      }else{  return this.weatherMessage = "Można ruszać na zakupy pamiętajmy o odpowiednim stroju"}
+
+
     
     });
   } 
@@ -103,6 +133,10 @@ class MyView1 extends PolymerElement {
     this.splice('products', e.model.index, 1);
   }
 
+  ready() {
+    super.ready();
+    this.serchWeather();
+  }
 
   static get template() {
     return html`
@@ -131,6 +165,38 @@ class MyView1 extends PolymerElement {
           min-width: 182px;
           paddint-top: 10px;
           border-bottom: 1px solid white;
+        }
+        .weatherWidget{
+          display: inline-block;
+          padding: 1rem;
+          box-shadow: 1px 1px 9px rgba(0, 0, 0, 0.1);
+          background-color: #f7f7f7;
+          
+        }
+        .weatherWidget div{
+          display: inline-block;
+        }
+        .temperatureAverage{
+          font-size: 3rem;
+        }
+        .temperatureAverage p{
+          margin: 0;
+        }
+    
+        .temperatureLow, .temperatureHigh{
+          margin: 0 0 0 0.5rem;;
+          font-size: 0.9rem;
+        }
+        .weatherText{
+          margin: 0;
+          font-size: 0.9rem;
+        }
+        .weatherWidget>p{
+          margin: 0;
+        }
+        .weatherShopping{
+          display: inline-block;
+          margin-right: 10rem;
         }
 
       </style>
@@ -168,17 +234,27 @@ class MyView1 extends PolymerElement {
             </form>
           </div>
           <div class="card">
-                  <p>sprawdz pogodę w swoim mieście</p>
-              <form>
-          
-                <paper-input no-label-float label="Podaj lokalizacje" value="{{localization}}"></paper-input>
-                <paper-button class="add" on-click="serchWeather">dodaj</paper-button>
-              </form>
-            <template is="dom-if" if="{{temperature}}">
-              <p>
-                {{temperature}}
-              </p>
-            </template>
+
+              <div class="weatherShopping">
+                    <p>sprawdz czy pogoda w Twoim mieście jest odpowiednia na zakupy</p>
+                <form>
+                  <paper-input no-label-float label="Podaj lokalizacje" value="{{localization}}"></paper-input>
+                  <paper-button class="add" on-click="serchWeather">ok</paper-button>
+                </form>
+                  <p>{{errorMEsage}}</p>
+                <p>{{weatherMessage}}</p>
+              </div>
+              <div class="weatherWidget">
+                <p>{{WidgetLocalization}}, Temperatura</p>
+                <div class="temperatureAverage">
+                  <p>{{temperature}}℃</p>
+                </div>
+                <div>  
+                  <p class="temperatureHigh">H:{{temperatureHigh}}℃</p>
+                  <p class="temperatureLow">L:{{temperatureLow}}℃</p>
+                </div>
+                <p class="weatherText">{{text}}<p>
+              </div>
           </div> 
      <!--https://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20weather.forecast%20where%20woeid%20in%20(select%20woeid%20from%20geo.places(1)%20where%20text%3D%22Szczecin%2C%20PL%22)&format=json&env=store%3A%2F%2Fdatatables.org%2Falltableswithkeys-->
     `;  
