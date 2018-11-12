@@ -104,7 +104,7 @@ class MyView1 extends PolymerElement {
         this.weatherMessage = 'Uwaga na silny wiatr.'
       } else if (this.temperature < 0) {
         this.weatherMessage = 'Możliwe przymrozki'
-      } else { this.weatherMessage = 'Można ruszać na zakupy pamiętajmy o odpowiednim stroju.' }
+      } else { this.weatherMessage = 'Można ruszać na zakupy, pamiętajmy o odpowiednim stroju.' }
     })
   }
 
